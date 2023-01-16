@@ -1,0 +1,39 @@
+apiVersion: radix.equinor.com/v1
+kind: RadixApplication
+metadata:
+  name: magnus-ndcsecurity-app-2
+spec:
+  environments:
+    - name: with-dns-rules
+      build:
+        from: main
+      egress:
+        allowedDnsZones:
+          - "vg.no"
+          - "*.equinor.com"
+    - name: without-dns-rules
+      build:
+        from: main
+  components:
+    - name: log4shell
+      authentication:
+        oauth2:
+          clientId: 46e3125d-4465-4217-9a71-20b3dc91d9f4
+          scope: openid profile email offline_access
+          setXAuthRequestHeaders: true
+          setAuthorizationHeader: true
+          sessionStoreType: redis
+          redisStore:
+            connectionUrl: redis://redis:6379
+      src: ./src
+      ports:
+      - name: http
+        port: 8080
+      publicPort: http
+    - name: redis
+      src: ./redis
+      secrets:
+        - REDIS_PASSWORD
+      ports:
+        - name: redis
+          port: 6379
