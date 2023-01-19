@@ -8,10 +8,13 @@ spec:
       build:
         from: main
       egress:
+        allowRadix: false
         allowedDnsZones:
           - "vg.no"
           - "*.equinor.com"
     - name: without-dns-rules
+      egress:
+        allowRadix: false
       build:
         from: main
   components:
@@ -30,6 +33,8 @@ spec:
       - name: http
         port: 8080
       publicPort: http
+      secret:
+      - DB_PASSWORD
     - name: redis
       src: ./redis
       secrets:
